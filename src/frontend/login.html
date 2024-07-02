@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: calc(100% - 20px);
+            padding: 0.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            color: green;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="login-button">Login</button>
+        <div id="message"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('login-button');
+            const messageDiv = document.getElementById('message');
+
+            const showMessage = (msg, isError = false) => {
+                messageDiv.textContent = msg;
+                messageDiv.style.color = isError ? 'red' : 'green';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 2000);
+            };
+
+            loginButton.addEventListener('click', async () => {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    showMessage('Please fill in all fields.', true);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:4000/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password }),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+
+                        localStorage.setItem('token', result.userId);
+
+                        showMessage('OTP Sent to Email. Please check your email.', false);
+                        setTimeout(() => {
+                            window.location.href = 'otpverify.html?userId=' + result.userId;
+                        }, 2000);
+                    } else {
+                        showMessage(result.msg, true);
+                    }
+                } catch (error) {
+                    console.log(error)
+                    showMessage('Error during login', true);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

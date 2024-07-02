@@ -1,0 +1,40 @@
+# Dependency directories
+/node_modules
+/bower_components
+
+# Environment variables file
+.env
+
+# Logs and debugging files
+*.log
+npm-debug.log*
+
+# Build output
+/build/
+/dist/
+/out/
+
+# IDE and editor specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+
+# OS generated files
+.DS_Store*
+Thumbs.db
+
+# Temporary files
+*.tmp
+
+# Environment configuration
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore package-lock.json for projects using npm
+package-lock.json
+
+# Ignore yarn.lock for projects using Yarn
+yarn.lock
