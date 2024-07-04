@@ -27,7 +27,12 @@ const userSchema = new Schema(
             type: String,
             require: [true, "password is required"]
         },
-        otp:String
+        googleId: {
+            type: String,
+            sparse: true
+        },
+        otp:String,
+        otpExpiry: Date
     },    
     { 
     timestamps:true

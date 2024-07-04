@@ -2,9 +2,13 @@ import express from 'express'
 import connectDB from './src/database/auth.database.js'
 import dotenv from 'dotenv'
 import authRoutes from './src/routes/auth.route.js'
+import googleAuthRoutes from './src/routes/googleAuth.route.js'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors'
+import session from 'express-session';
+import passport from 'passport';
+import './src/config/passport.js'
 
 dotenv.config({
     path: './.env'
@@ -13,6 +17,21 @@ dotenv.config({
 connectDB();
 
 const app = express();
+
+app.use(session({                                         //
+    resave: false,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET || 'SECRET'
+  }));
+
+app.use(express.json())                                   //
+app.use(express.urlencoded({ extended: true }))           //
+app.use(cookieParser())                                   //
+app.use(passport.initialize());                           //
+app.use(passport.session());                              //
+
+// Serve static frontend files
+app.use(express.static('frontend'));                      //
 
 //middleware
 app.use(bodyParser.json())
@@ -27,6 +46,7 @@ app.use(cors({
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api/auth", googleAuthRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, ()=> {
