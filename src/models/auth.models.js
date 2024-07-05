@@ -32,7 +32,11 @@ const userSchema = new Schema(
             sparse: true
         },
         otp:String,
-        otpExpiry: Date
+        otpExpiry: Date,
+        role: {
+            type: String,
+            default: 'user'
+        }
     },    
     { 
     timestamps:true

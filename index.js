@@ -3,6 +3,7 @@ import connectDB from './src/database/auth.database.js'
 import dotenv from 'dotenv'
 import authRoutes from './src/routes/auth.route.js'
 import googleAuthRoutes from './src/routes/googleAuth.route.js'
+import userRoute from './src/routes/user.route.js'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors'
@@ -47,6 +48,7 @@ app.use(cors({
 // Routes
 app.use("/api", authRoutes);
 app.use("/api/auth", googleAuthRoutes)
+app.use("/api", userRoute)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, ()=> {

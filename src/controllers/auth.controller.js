@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 import { generateOTP } from "../utils/generateOTP.js"
+// import { user } from 'passport'
 
 //signup
 const signup = async (req, res)=> {
@@ -50,7 +51,6 @@ const sendOTPEmail = async (email, otp) => {
 
     await sender.sendMail(receiver);
 };
-
 
 // login
 const login = async(req, res) => {
@@ -128,38 +128,62 @@ const jwtLogin = async(req, res) => {
         }
 }
 
-//Change Password 
-const changePassword = async (req, res) => {
+
+// --------------------------------------------------------------------------------------------------------
+
+
+// Admin Login Controller 
+const adminLogin = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
-        const { userId, currentPassword, newPassword, confirmPassword } = req.body;
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            return res.status(400).json({ msg: 'All fields are required.' });
+        const user = await User.findOne({ email });
+        if(!user || user.role !== 'admin'){
+            return res.status(401).json({ success: false, message: "Unauthorized"});
         }
 
-        const user = await User.findById(userId);
-        
-        if (!user) {
-            return res.status(400).json({ msg: 'User not found.' });
+        if(user.password != password){
+            return res.status(400).json({ success: false, message: "Password Is Incorrect" })
         }
 
-        if (user.password !== currentPassword) {
-            return res.status(400).json({ msg: 'Current password is incorrect.' });
-        }
+        res.status(200).json({ success: true, message: 'Login successful' })
 
-        if (newPassword !== confirmPassword) {
-            return res.status(400).json({ msg: 'New passwords do not match.' });
-        }
+    } catch (error) {
+        res.status(5000).json({msg: "Internal Server Error!"})
+    }
+ }
 
-        user.password = newPassword;
+// Assigning Admin Role By Admin
+const assignAdminRole = async (req, res) => {
+    const { username } = req.body;
+
+    try {
+        const user = await User.findOne({ username })
+        if(!user){
+            return res.status(400).json({ message: "User Not Found"})
+        }
+        user.role = 'admin'
         await user.save();
 
-        res.status(200).json({ msg: 'Password changed successfully.' });
+        res.status(200).json({ success: true, message: 'User assigned admin role successfully' });
     } catch (error) {
-        // console.error('Error during password change:', error);
-        res.status(500).json({ msg: 'Internal server error.' });
+        res.status(500).json({ success: false, message: 'Internal Server Error',error });
     }
-};
+}
+
+// Get User From Database
+const getUser = async (req, res) => {
+    try {
+        const users = await User.find({}, "username email password role");
+        res.status(200).json(users); 
+    } catch (error) {
+        res.status(500).json({ msg: "Internal Server Error!"})
+    }
+}
+
+
+// --------------------------------------------------------------------------------------------------------
+
 
 // logout
 const logout = async (req, res) =>{
@@ -173,6 +197,8 @@ export {
     login,
     verifyOTP,
     jwtLogin,
-    changePassword,
+    adminLogin,
+    assignAdminRole,
+    getUser,
     logout
 }
