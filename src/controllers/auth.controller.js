@@ -149,10 +149,20 @@ const adminLogin = async (req, res) => {
         res.status(200).json({ success: true, message: 'Login successful' })
 
     } catch (error) {
-        res.status(5000).json({msg: "Internal Server Error!"})
+        res.status(500).json({msg: "Internal Server Error!"})
     }
  }
-
+ 
+ // Get User From Database
+ const getUser = async (req, res) => {
+     try {
+         const users = await User.find({}, "username email role");
+         res.status(200).json(users); 
+        } catch (error) {
+            res.status(500).json({ msg: "Internal Server Error!"})
+        }
+}
+    
 // Assigning Admin Role By Admin
 const assignAdminRole = async (req, res) => {
     const { username } = req.body;
@@ -164,24 +174,31 @@ const assignAdminRole = async (req, res) => {
         }
         user.role = 'admin'
         await user.save();
-
+    
         res.status(200).json({ success: true, message: 'User assigned admin role successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Internal Server Error',error });
-    }
+    }    
 }
 
-// Get User From Database
-const getUser = async (req, res) => {
+// Delete User By Admin
+const deleteUser = async (req, res) => {
+    const { username } = req.body;
+
     try {
-        const users = await User.find({}, "username email password role");
-        res.status(200).json(users); 
+        const user = await User.findOne({ username })
+        if(!user){
+            return res.status(400).json({ message: "User Not Found!" })
+        }
+
+        await User.deleteOne({ username })
+
+        res.status(200).json({ success: true, message: "user deleted successfully"})
     } catch (error) {
-        res.status(500).json({ msg: "Internal Server Error!"})
+        res.status(500).json({ success: false, message: "Internal Server Error",error})
     }
 }
-
-
+    
 // --------------------------------------------------------------------------------------------------------
 
 
@@ -198,7 +215,8 @@ export {
     verifyOTP,
     jwtLogin,
     adminLogin,
-    assignAdminRole,
     getUser,
+    assignAdminRole,
+    deleteUser,
     logout
 }

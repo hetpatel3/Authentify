@@ -1,5 +1,5 @@
 import express from 'express'
-import { signup, login, logout, jwtLogin, verifyOTP, adminLogin, assignAdminRole} from '../controllers/auth.controller.js'
+import { signup, login, logout, jwtLogin, verifyOTP, adminLogin, assignAdminRole, deleteUser} from '../controllers/auth.controller.js'
 
 const router = express.Router()
 
@@ -10,5 +10,6 @@ router.post("/jwtlogin", jwtLogin)
 router.post("/logout", logout)
 router.post("/admin-login", adminLogin)
 router.post("/assign-admin",assignAdminRole)
+router.delete("/delete-user",deleteUser)
 
 export default router;
