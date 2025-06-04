@@ -42,6 +42,10 @@ const sendOTPEmail = async (email, otp) => {
         },
     });
 
+    console.log(process.env.EMAIL);
+    console.log(process.env.EMAIL_PASS);
+    
+
     const receiver = {
         from: process.env.EMAIL,
         to: email,
@@ -132,7 +136,7 @@ const jwtLogin = async(req, res) => {
 // --------------------------------------------------------------------------------------------------------
 
 
-// Admin Login Controller 
+// Admin Login Controller
 const adminLogin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -151,10 +155,10 @@ const adminLogin = async (req, res) => {
     } catch (error) {
         res.status(500).json({msg: "Internal Server Error!"})
     }
- }
- 
+}
+
  // Get User From Database
- const getUser = async (req, res) => {
+const getUser = async (req, res) => {
      try {
          const users = await User.find({}, "username email role");
          res.status(200).json(users); 

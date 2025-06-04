@@ -19,20 +19,20 @@ connectDB();
 
 const app = express();
 
-app.use(session({                                         //
+app.use(session({     //session is used to store the data of the user
     resave: false,
     saveUninitialized: true,
     secret: process.env.SESSION_SECRET || 'SECRET'
   }));
 
-app.use(express.json())                                   //
-app.use(express.urlencoded({ extended: true }))           //
-app.use(cookieParser())                                   //
-app.use(passport.initialize());                           //
-app.use(passport.session());                              //
+app.use(express.json())                                   
+app.use(express.urlencoded({ extended: true })) //urlencoded is used to parse the data coming from the form 
+app.use(cookieParser()) //cookie parser is used to parse the cookies
+app.use(passport.initialize()); // initialize method is used to initialize the passport
+app.use(passport.session()); //passport.session is used to store the data of the user in the session
 
 // Serve static frontend files
-app.use(express.static('frontend'));                      //
+app.use(express.static('frontend')); //exprees.static is used to serve the static files like images, css, js files
 
 //middleware
 app.use(bodyParser.json())
