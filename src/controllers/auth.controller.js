@@ -79,11 +79,12 @@ const login = async(req, res) => {
         await user.save();
         await sendOTPEmail(email, otp);
 
-        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 
-        res.cookie('token', token, { httpOnly: true });
-        res.status(200).json({ msg: 'OTP sent to email. Please verify OTP.', userId: user._id, token });
+        // res.cookie('token', token, { httpOnly: true });
+        // res.status(200).json({ msg: 'OTP sent to email. Please verify OTP.', userId: user._id, token });
+        res.status(200).json({ msg: 'OTP sent to email. Please verify OTP.', userId: user._id,});
     } catch (error) {
         console.error(error); // Log the error for debugging
         return res.status(500).json({ msg: 'Internal server error!' });
@@ -111,7 +112,27 @@ const verifyOTP = async (req, res) => {
         user.otp = null; // Clear OTP after verification
         await user.save();
 
-        res.status(200).json({ msg: 'OTP Verified. Login Successful.' });
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.cookie('token', token, { httpOnly: true });
+
+        res.status(200).json({
+            msg: 'OTP Verified. Login Successful.',
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                name: user.fullname,
+                username: user.username,
+                role: user.role,
+            }
+        });
+
+        // res.status(200).json({ msg: 'OTP Verified. Login Successful.' });
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error!' });
     }

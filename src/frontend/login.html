@@ -92,7 +92,7 @@
                     const result = await response.json();
                     if (response.ok) {
 
-                        localStorage.setItem('token', result.userId);
+                        // localStorage.setItem('token', result.userId);
 
                         showMessage('OTP Sent to Email. Please check your email.', false);
                         setTimeout(() => {
