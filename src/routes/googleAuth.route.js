@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-const client = new OAuth2Client("1294987635-290gg92uabfcc1iao3hmv6fi95hv84r2.apps.googleusercontent.com");
+const client = new OAuth2Client(process.env.ANDROID_GOOGLE_CLIENT_ID);
 
 router.post('/google/mobile', async (req, res) => {
   const { idToken } = req.body;
@@ -14,7 +14,7 @@ router.post('/google/mobile', async (req, res) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken,
-      audience: "1294987635-290gg92uabfcc1iao3hmv6fi95hv84r2.apps.googleusercontent.com",
+      audience: process.env.ANDROID_GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
