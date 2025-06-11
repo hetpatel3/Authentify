@@ -181,7 +181,7 @@ const adminLogin = async (req, res) => {
  // Get User From Database
 const getUser = async (req, res) => {
      try {
-         const users = await User.find({}, "username email role");
+         const users = await User.find({}, "username email role fullname");
          res.status(200).json(users); 
         } catch (error) {
             res.status(500).json({ msg: "Internal Server Error!"})
