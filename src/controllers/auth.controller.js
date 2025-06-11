@@ -19,7 +19,7 @@ const signup = async (req, res)=> {
 
         const existedUser = await User.findOne({ email })
         if(existedUser){
-            return res.status(400).json({msg:'User Already Exist!'})
+            return res.status(409).json({msg:'User Already Exist!'})
         }
 
         await User.create({ username, fullname, email, password });
@@ -67,11 +67,11 @@ const login = async(req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ msg: 'User not found! Please sign up.' });
+            return res.status(404).json({ msg: 'User not found! Please sign up.' });
         }
 
         if (user.password !== password) {
-            return res.status(400).json({ msg: 'Incorrect password!' });
+            return res.status(401).json({ msg: 'Incorrect password!' });
         }
 
         const otp = generateOTP();
