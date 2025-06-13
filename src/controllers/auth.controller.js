@@ -195,7 +195,7 @@ const assignAdminRole = async (req, res) => {
     try {
         const user = await User.findOne({ username })
         if(!user){
-            return res.status(400).json({ message: "User Not Found"})
+            return res.status(404).json({success: false, message: "User Not Found"})
         }
         user.role = 'admin'
         await user.save();
@@ -213,7 +213,7 @@ const deleteUser = async (req, res) => {
     try {
         const user = await User.findOne({ username })
         if(!user){
-            return res.status(400).json({ message: "User Not Found!" })
+            return res.status(404).json({success: false, message: "User Not Found!" })
         }
 
         await User.deleteOne({ username })
