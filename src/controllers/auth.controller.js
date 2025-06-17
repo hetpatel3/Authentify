@@ -126,7 +126,7 @@ const verifyOTP = async (req, res) => {
       user: {
         _id: user._id,
         email: user.email,
-        name: user.fullname,
+        fullname: user.fullname,
         username: user.username,
         role: user.role,
       },
