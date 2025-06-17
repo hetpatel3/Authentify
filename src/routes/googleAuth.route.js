@@ -18,10 +18,22 @@ router.post('/google/mobile', async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    const { sub, email, name } = payload;
+    const { sub, email } = payload;
+
+    if (!email) return res.status(400).json({ error: 'Email not found in token payload' });
+
+    const username = email.split('@')[0];
+    const fullname = username;
+    const role = 'user';
 
     // You should create or fetch user from your DB here
-    const user = { id: sub, email, name }; // Add more if needed
+    const user = {
+      id: sub,
+      email,
+      fullname,
+      username,
+      role
+    };
 
     // Sign your own JWT
     const token = jwt.sign(user, 'qwerty', { expiresIn: '7d' });
