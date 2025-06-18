@@ -129,6 +129,7 @@ const verifyOTP = async (req, res) => {
         fullname: user.fullname,
         username: user.username,
         role: user.role,
+        hasPassword: Boolean(user.password),
       },
     });
 
@@ -192,7 +193,7 @@ const changePassword = async (req, res) => {
   try {
     const { userId, oldPassword, newPassword } = req.body;
 
-    if (!userId || !oldPassword || !newPassword) {
+    if (!userId || !newPassword) {
       return res.status(400).json({ msg: "All fields are required." });
     }
 
@@ -201,8 +202,13 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ msg: "User not found." });
     }
 
-    if (user.password !== oldPassword) {
-      return res.status(401).json({ msg: "Old password is incorrect." });
+    if (user.password) {
+      if (!oldPassword) {
+        return res.status(400).json({ msg: "Old password is required." });
+      }
+      if (user.password !== oldPassword) {
+        return res.status(401).json({ msg: "Old password is incorrect." });
+      }
     }
 
     user.password = newPassword;
