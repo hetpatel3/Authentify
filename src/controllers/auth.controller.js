@@ -71,7 +71,7 @@ const login = async (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ msg: "Incorrect password!" });
+      return res.status(401).json({ msg: "Incorrect password!!" });
     }
 
     const otp = generateOTP();
@@ -200,7 +200,7 @@ const changePassword = async (req, res) => {
     const user = userId
       ? await User.findById(userId)
       : await User.findOne({ googleId });
-      
+
     if (!user) {
       return res.status(404).json({ msg: "User not found." });
     }
