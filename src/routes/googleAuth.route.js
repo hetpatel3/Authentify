@@ -36,7 +36,15 @@ router.post('/google/mobile', async (req, res) => {
         fullname,
         role,
       });
-      await user.save();
+      try {
+        await user.save();
+        console.log("✅ New Google user saved in DB:", user);
+      } catch (err) {
+        console.error("❌ Failed to save Google user to DB:", err);
+        return res.status(500).json({ error: 'User creation failed' });
+      }
+    }else {
+      console.log("🔄 Google user already exists:", user);
     }
 
     const tokenPayload = {
