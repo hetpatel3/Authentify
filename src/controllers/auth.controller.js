@@ -191,13 +191,16 @@ const getUser = async (req, res) => {
 // Change Password Controller
 const changePassword = async (req, res) => {
   try {
-    const { userId, oldPassword, newPassword } = req.body;
+    const { userId, googleId, oldPassword, newPassword } = req.body;
 
-    if (!userId || !newPassword) {
+    if ((!userId && !googleId) || !newPassword) {
       return res.status(400).json({ msg: "All fields are required." });
     }
 
-    const user = await User.findById(userId);
+    const user = userId
+      ? await User.findById(userId)
+      : await User.findOne({ googleId });
+      
     if (!user) {
       return res.status(404).json({ msg: "User not found." });
     }
