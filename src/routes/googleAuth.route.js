@@ -18,7 +18,7 @@ router.post('/google/mobile', async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    const { sub, email } = payload;
+    const { sub: googleId, email } = payload;
 
     if (!email) return res.status(400).json({ error: 'Email not found in token payload' });
 
@@ -26,19 +26,41 @@ router.post('/google/mobile', async (req, res) => {
     const fullname = username;
     const role = 'user';
 
-    // You should create or fetch user from your DB here
-    const user = {
-      id: sub,
-      email,
-      fullname,
-      username,
-      role
+    let user = await User.findOne({ googleId });
+
+    if (!user) {
+      user = new User({
+        googleId,
+        email,
+        username,
+        fullname,
+        role,
+      });
+      await user.save();
+    }
+
+    const tokenPayload = {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
     };
 
     // Sign your own JWT
-    const token = jwt.sign(user, 'qwerty', { expiresIn: '7d' });
+    const token = jwt.sign(tokenPayload, 'qwerty', { expiresIn: '7d' });
 
-    return res.json({ token, user });
+    return res.status(200).json({
+      token,
+      user: {
+        _id: user._id,
+        googleId: user.googleId,
+        email: user.email,
+        username: user.username,
+        fullname: user.fullname,
+        role: user.role,
+        hasPassword: !!user.password,
+      },
+    });
   } catch (err) {
     return res.status(401).json({ error: 'Invalid ID token' });
   }
