@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/user.model.js';
+import { User } from "../models/auth.models.js";
 
 const router = express.Router();
 
@@ -30,6 +30,12 @@ router.post('/google/mobile', async (req, res) => {
     let user = await User.findOne({ googleId });
 
     if (!user) {
+
+      const emailTaken = await User.findOne({ email });
+      if (emailTaken) {
+        return res.status(409).json({ error: "An account already exists with this email." });
+      }
+      
       user = new User({
         googleId,
         email,
@@ -42,6 +48,9 @@ router.post('/google/mobile', async (req, res) => {
         console.log("✅ New Google user saved in DB:", user);
       } catch (err) {
         console.error("❌ Failed to save Google user to DB:", err);
+        if (err?.code === 11000) {
+          return res.status(409).json({ error: "Duplicate key error. Email or username already exists." });
+        }
         return res.status(500).json({ error: 'User creation failed' });
       }
     }else {
